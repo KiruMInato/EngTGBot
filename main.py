@@ -7,8 +7,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from telebot import types
 from telebot.types import InlineKeyboardMarkup
 
-
-bot = telebot.TeleBot('')
+bot = telebot.TeleBot('8389909764:AAFYb8P0mgWwusXF7GZ3tav0uzDGlhimfws')
 
 name = None
 
@@ -22,26 +21,41 @@ try:
 except (Exception, Error) as error:
     print("Ошибка при работе с PostgreSQL", error)
 
-@bot.message_handler(commands=['info'])
-def send_welcome(message):
-    bot.send_message(message.chat.id, f'Hello, {message.from_user.username}')
+
 @bot.message_handler(commands=['start'])
 def info(message):
+
+    tg=message.from_user.username
     connection = psycopg2.connect(user="postgres",
                                   password="sk1726ks",
                                   host="localhost",
                                   port="1726",
                                   database="EngTGBot")
     cursor = connection.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS USERS (id serial primary key, name varchar(50), tg_name varchar(50) UNIQUE, role text,)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS USERS (id serial primary key, name text, tg_name text UNIQUE, role text)')
+    connection.commit()
+    cursor.close()
+    connection.close()
+    connection = psycopg2.connect(user="postgres",
+                                  password="sk1726ks",
+                                  host="localhost",
+                                  port="1726",
+                                  database="EngTGBot")
+    cursor = connection.cursor()
+    cursor.execute('SELECT tg_name FROM users WHERE LOWER(tg_name) = LOWER(\'%s\')'% str(tg))
+    record = cursor.fetchone()
     connection.commit()
     cursor.close()
     connection.close()
 
-    bot.send_message(message.chat.id, f"Здравствуйте, {message.from_user.first_name}!\n"
-                                      f" Сейчас я вас зарегистрирую.\n"
-                                      f"Введите ваше имя:   ")
-    bot.register_next_step_handler(message, user_name)
+    if record is None:
+        bot.send_photo(message.chat.id, open('Do you speak english.jpg', 'rb'),
+                       caption='Пройдите регистрацию')
+        bot.register_next_step_handler(message, user_name)
+
+    else:
+        bot.send_photo(message.chat.id, open('Do you speak english.jpg', 'rb'),
+                       caption=f'Добро пожаловать, {message.from_user.first_name}!')
 
 
 def user_name(message):
