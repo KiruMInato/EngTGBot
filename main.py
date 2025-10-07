@@ -54,7 +54,7 @@ def user_name(message):
        port="1726",
        database="EngTGBot")
     cursor = connection.cursor()
-    cursor.execute('INSERT INTO users (name, tg_name) VALUES (%s, %s)', (name, message.from_user.username))
+    cursor.execute('INSERT INTO users (name, tg_name, role) VALUES (%s, %s, %s)', (name, message.from_user.username, 'User'))
     connection.commit()
     cursor.close()
     connection.close()
