@@ -49,13 +49,36 @@ def info(message):
     connection.close()
 
     if record is None:
+        markup = types.InlineKeyboardMarkup()
+        btn = types.InlineKeyboardButton('Регистрация', callback_data="registration")
+        markup.add(btn)
         bot.send_photo(message.chat.id, open('Do you speak english.jpg', 'rb'),
-                       caption='Пройдите регистрацию')
-        bot.register_next_step_handler(message, user_name)
+                       caption=f'Добро пожаловать, {message.from_user.first_name}!', reply_markup=markup)
 
     else:
         bot.send_photo(message.chat.id, open('Do you speak english.jpg', 'rb'),
                        caption=f'Добро пожаловать, {message.from_user.first_name}!')
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    if call.data == "registration":
+        bot.send_message(call.message.chat.id, f'Введите своё имя:')
+        bot.register_next_step_handler(call.message, user_name)
+    if call.data == 'users':
+        connection = psycopg2.connect(user="postgres",
+                                  password="sk1726ks",
+                                  host="localhost",
+                                  port="1726",
+                                  database="EngTGBot")
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM users')
+        users = cursor.fetchall()
+        info = ''
+        for el in users:
+            info += f'Имя: {el[1]}| TG: {el[2]}| Role: {el[3]}\n'
+        cursor.close()
+        connection.close()
+        bot.send_message(call.message.chat.id, info)
 
 
 def user_name(message):
@@ -77,35 +100,8 @@ def user_name(message):
     markup.add(btn)
     bot.send_message(message.chat.id, 'Регистрация прошла успешно!', reply_markup=markup)
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback(call):
-    connection = psycopg2.connect(user="postgres",
-                                  password="sk1726ks",
-                                  host="localhost",
-                                  port="1726",
-                                  database="EngTGBot")
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM users')
-    users = cursor.fetchall()
-    info = ''
-    for el in users:
-        info += f'Имя: {el[1]}| TG: {el[2]}| Role: {el[3]}\n'
-    cursor.close()
-    connection.close()
-    bot.send_message(call.message.chat.id, info)
+
 
 if __name__ == "__main__":
     bot.polling(none_stop=True)
-    # markup = types.InlineKeyboardMarkup()
-    # btn = types.InlineKeyboardButton("Ученик", callback_data="student")
-    # btn2 = types.InlineKeyboardButton("Учитель", callback_data="teacher")
-    # markup.add(btn)
-    # markup.add(btn2) , reply_markup=markup
-    # @bot.callback_query_handler(func=lambda call: True)
-    # def callback(call):
-    #     if call.data == "student":
-    #         bot.answer_callback_query(call.id, "Вы выбрали Ученик!")
-    #         bot.send_message(call.message.chat.id, "Отлично, теперь вы ученик!")
-    #     if call.data == "teacher":
-    #         bot.answer_callback_query(call.id, "Вы выбрали Учитель!")
-    #         bot.send_message(call.message.chat.id, "Отлично, теперь вы учитель!")
+
