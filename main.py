@@ -1,5 +1,5 @@
 
-
+import registration
 import telebot
 import psycopg2
 from psycopg2 import Error
@@ -21,43 +21,9 @@ try:
 except (Exception, Error) as error:
     print("Ошибка при работе с PostgreSQL", error)
 
-
 @bot.message_handler(commands=['start'])
 def info(message):
-
-    tg=message.from_user.username
-    connection = psycopg2.connect(user="postgres",
-                                  password="sk1726ks",
-                                  host="localhost",
-                                  port="1726",
-                                  database="EngTGBot")
-    cursor = connection.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS USERS (id serial primary key, name text, tg_name text UNIQUE, role text)')
-    connection.commit()
-    cursor.close()
-    connection.close()
-    connection = psycopg2.connect(user="postgres",
-                                  password="sk1726ks",
-                                  host="localhost",
-                                  port="1726",
-                                  database="EngTGBot")
-    cursor = connection.cursor()
-    cursor.execute('SELECT tg_name FROM users WHERE LOWER(tg_name) = LOWER(\'%s\')'% str(tg))
-    record = cursor.fetchone()
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-    if record is None:
-        markup = types.InlineKeyboardMarkup()
-        btn = types.InlineKeyboardButton('Регистрация', callback_data="registration")
-        markup.add(btn)
-        bot.send_photo(message.chat.id, open('Do you speak english.jpg', 'rb'),
-                       caption=f'Добро пожаловать, {message.from_user.first_name}!', reply_markup=markup)
-
-    else:
-        bot.send_photo(message.chat.id, open('Do you speak english.jpg', 'rb'),
-                       caption=f'Добро пожаловать, {message.from_user.first_name}!')
+    registration.start_registration(message)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
@@ -80,7 +46,6 @@ def callback(call):
         connection.close()
         bot.send_message(call.message.chat.id, info)
 
-
 def user_name(message):
     global name
     name = message.text.strip()
@@ -100,8 +65,5 @@ def user_name(message):
     markup.add(btn)
     bot.send_message(message.chat.id, 'Регистрация прошла успешно!', reply_markup=markup)
 
-
-
 if __name__ == "__main__":
     bot.polling(none_stop=True)
-
