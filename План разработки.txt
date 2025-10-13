@@ -13,7 +13,7 @@ ProjectTGBot
 1. Реализация регистрации 
 
 2. Создание полноценной бд  (Таблицы: "Users", "Groups" "Dictionary","TestQuestions","Tests","Reports")
-    2.1 Таблица "Users" хранит информацию о пользователях зарегистрированных у бота. Поля: "UserId", "Name", "TGName", "Role", "Grade"(Grade - номер класса ученика, для учителя пустое)
+    2.1 Таблица "Users" хранит информацию о пользователях зарегистрированных у бота. Поля: "UserId", "Name", "TGName", "Role"
     2.2 Таблица "Groups" содержит информацию о группах. Поля: "GroupId", "Grade", "Letter", "GroupNumber"
     2.3 Таблица "Dictionary" хранит словарь. Поля: "Id", "Word", "Translate", "Transcription"
     2.4 Таблица "TestQuestions" хранит пул вопросов которые используются в тестах. Поля: "QuestionId", "Question", "Answer", "TestId"
