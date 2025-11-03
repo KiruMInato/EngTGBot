@@ -1,62 +1,47 @@
-from bots import main
-import telebot
 import psycopg2
 from telebot import types
+from bots import config
+from db import database
+from buttons import markups_of_registration as nav
 
-name = None
-role = None
+
+
+
+class User:
+    name=None
+    role=None
+    tg_name=None
+
+    def set_name(self, name):
+        self.name=name
+
+    def set_role(self, role):
+        self.role=role
+
+    def set_tg_name(self, tg_name):
+        self.tg_name=tg_name
+user=User()
 def start_registration(message):
-        bot = main.bot
+        bot = config.bot
         tg = message.from_user.username
-        connection = psycopg2.connect(user="postgres",
-                                  password="sk1726ks",
-                                  host="localhost",
-                                  port="1726",
-                                  database="EngTGBot")
-        cursor = connection.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS USERS (id serial primary key, name text, tg_name text UNIQUE, role text)')
-        connection.commit()
-        cursor.close()
-        connection.close()
-        connection = psycopg2.connect(user="postgres",
-                                  password="sk1726ks",
-                                  host="localhost",
-                                  port="1726",
-                                  database="EngTGBot")
-        cursor = connection.cursor()
-        cursor.execute('SELECT tg_name FROM users WHERE LOWER(tg_name) = LOWER(%s)', (tg,))
-        record = cursor.fetchone()
-        connection.commit()
-        cursor.close()
-        connection.close()
+        record = database.get_record_by_tg_name(tg)
         if record is None:
-            markup = types.InlineKeyboardMarkup()
-            btn = types.InlineKeyboardButton('Регистрация', callback_data="registration")
-            markup.add(btn)
+            user.set_tg_name(tg)
             bot.send_photo(message.chat.id, open('../photo/Do you speak english.jpg', 'rb'),
-                           caption=f'Добро пожаловать, {message.from_user.first_name}!', reply_markup=markup)
+                               caption=f'Добро пожаловать, {message.from_user.first_name}!', reply_markup=nav.start_registration)
         else:
             bot.send_photo(message.chat.id, open('../photo/Do you speak english.jpg', 'rb'),
-                           caption=f'Добро пожаловать, {message.from_user.first_name}!')
+                               caption=f'Добро пожаловать, {message.from_user.first_name}!')
 
 
 def user_name(message, role):
-            bot=main.bot
+            bot=config.bot
             global name
             name = message.text.strip()
-            connection = psycopg2.connect(
-                user="postgres",
-                password="sk1726ks",
-                host="localhost",
-                port="1726",
-                database="EngTGBot")
-            cursor = connection.cursor()
-            cursor.execute('INSERT INTO users (name, tg_name, role) VALUES (%s, %s, %s)',
-                           (name, message.from_user.username, role))
-            connection.commit()
-            cursor.close()
-            connection.close()
-            markup = types.InlineKeyboardMarkup()
-            btn = types.InlineKeyboardButton('Список пользователей', callback_data='users')
-            markup.add(btn)
-            bot.send_message(message.chat.id, 'Регистрация прошла успешно!')
+            user.set_name(name)
+            user.set_role(role)
+            database.set_name_tgname_role_into_table(user.name, user.role, user.tg_name)
+            if user.role == 'Student':
+                bot.send_message(message.chat.id, 'Выберите номер вашего класса:', reply_markup=nav.set_students_grade)
+            elif user.role == 'Teacher':
+                bot.send_message(message.chat.id, 'Регистрация прошла успешно!')

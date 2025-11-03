@@ -1,16 +1,19 @@
+
+
 from function import registration
-import telebot
 import psycopg2
 from psycopg2 import Error
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from telebot import types
+from config import bot
+from function import groups
+from buttons import markups_of_registration as nav
 
 
 
-bot = telebot.TeleBot('8389909764:AAFYb8P0mgWwusXF7GZ3tav0uzDGlhimfws')
 
 name = None
 role = None
+grade = None
 
 try:
     connection = psycopg2.connect(user="postgres",
@@ -26,25 +29,58 @@ except (Exception, Error) as error:
 def reg1(message):
     registration.start_registration(message)
 
+@bot.message_handler(func=lambda message: True)
+def handle_buttons(message):
+    global role
+    if message.text == 'А':
+        bot.send_message(message.chat.id, "Вы выбрали А класс! Завершаю регистрацию...", reply_markup=nav.remove_registration_set_letter)
+        groups.user_letter(message)
+    if message.text == 'Б':
+        bot.send_message(message.chat.id, "Вы выбрали Б класс! Завершаю регистрацию...", reply_markup=nav.remove_registration_set_letter)
+        groups.user_letter(message)
+    if message.text == 'Student':
+        role = 'Student'
+        bot.send_message(message.chat.id, "Отлично, теперь введите ФИО:", reply_markup=nav.remove_registration_set_role)
+        bot.register_next_step_handler(message, reg2)
+    if message.text == 'Teacher':
+        role = 'Teacher'
+        bot.send_message(message.chat.id, "Отлично, теперь введите ФИО:", reply_markup=nav.remove_registration_set_role)
+        bot.register_next_step_handler(message, reg2)
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
         global role
+        global grade
         if call.data == "registration":
-                markup1 = types.InlineKeyboardMarkup()
-                btn1 = types.InlineKeyboardButton('Student', callback_data='student')
-                btn2 = types.InlineKeyboardButton('Teacher', callback_data='teacher')
-                markup1.add(btn1, btn2)
-                bot.send_message(call.message.chat.id, f'Кем вы являетесь?', reply_markup=markup1)
-        if call.data == "student":
-            role = 'Student'
-            bot.answer_callback_query(call.id, "Вы выбрали Ученик!")
-            bot.send_message(call.message.chat.id, "Отлично, теперь введите имя и фамилию:")
-            bot.register_next_step_handler(call.message, reg2)
-        if call.data == "teacher":
-            role = 'Teacher'
-            bot.answer_callback_query(call.id, "Вы выбрали Учитель!")
-            bot.send_message(call.message.chat.id, "Отлично, теперь введите ФИО:")
-            bot.register_next_step_handler(call.message, reg2)
+            bot.send_message(call.message.chat.id, f'Кем вы являетесь?', reply_markup=nav.registration_set_role)
+        if call.data == '5':
+            grade = 5
+            bot.send_message(call.message.chat.id, 'Вы выбрали 5 класс!')
+            groups.user_grade(call, grade)
+        if call.data == '6':
+            grade = 6
+            bot.send_message(call.message.chat.id, 'Вы выбрали 6 класс!')
+            groups.user_grade(call, grade)
+        if call.data == '7':
+            grade = 7
+            bot.send_message(call.message.chat.id, 'Вы выбрали 7 класс!')
+            groups.user_grade(call, grade)
+        if call.data == '8':
+            grade = 8
+            bot.send_message(call.message.chat.id, 'Вы выбрали 8 класс!')
+            groups.user_grade(call, grade)
+        if call.data == '9':
+            grade = 9
+            bot.send_message(call.message.chat.id, 'Вы выбрали 9 класс!')
+            groups.user_grade(call, grade)
+        if call.data == '10':
+            grade = 10
+            bot.send_message(call.message.chat.id, 'Вы выбрали 10 класс!')
+            groups.user_grade(call, grade)
+        if call.data == '11':
+            grade = 11
+            bot.send_message(call.message.chat.id, 'Вы выбрали 11 класс!')
+            groups.user_grade(call, grade)
         if call.data == 'users':
             connection = psycopg2.connect(user="postgres",
                                   password="sk1726ks",
@@ -60,6 +96,7 @@ def callback(call):
             cursor.close()
             connection.close()
             bot.send_message(call.message.chat.id, info)
+
 
 def reg2(message):
     global role

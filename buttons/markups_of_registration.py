@@ -1,0 +1,35 @@
+from bots import main
+import telebot
+from telebot import types
+
+start_registration = types.InlineKeyboardMarkup()
+start_registration_button = types.InlineKeyboardButton('Регистрация', callback_data="registration")
+start_registration.add(start_registration_button)
+
+registration_set_role = types.ReplyKeyboardMarkup()
+role_student = types.KeyboardButton('Student')
+role_teacher = types.KeyboardButton('Teacher')
+registration_set_role.add(role_student, role_teacher)
+remove_registration_set_role = types.ReplyKeyboardRemove()
+
+registration_set_letter = types.ReplyKeyboardMarkup()
+letter_a = types.KeyboardButton('А')
+letter_b = types.KeyboardButton('Б')
+registration_set_letter.add(letter_a, letter_b)
+remove_registration_set_letter = types.ReplyKeyboardRemove()
+
+set_students_grade = types.InlineKeyboardMarkup()
+grade_5 = types.InlineKeyboardButton('5', callback_data='5')
+grade_6 = types.InlineKeyboardButton('6', callback_data='6')
+grade_7 = types.InlineKeyboardButton('7', callback_data='7')
+grade_8 = types.InlineKeyboardButton('8', callback_data='8')
+grade_9 = types.InlineKeyboardButton('9', callback_data='9')
+grade_10 = types.InlineKeyboardButton('10', callback_data='10')
+grade_11 = types.InlineKeyboardButton('11', callback_data='11')
+set_students_grade.add(grade_5)
+set_students_grade.add(grade_6)
+set_students_grade.add(grade_7)
+set_students_grade.add(grade_8)
+set_students_grade.add(grade_9)
+set_students_grade.add(grade_10)
+set_students_grade.add(grade_11)
