@@ -6,7 +6,9 @@ from telebot import types
 from bots import config
 from psycopg2 import Error
 from buttons import markups_of_registration as nav
+from buttons import markups_of_mainMenu as nav2
 from db import database
+from bots import main
 
 
 
@@ -46,4 +48,5 @@ def user_letter(message):
     markup = types.InlineKeyboardMarkup()
     btn = types.InlineKeyboardButton('Список пользователей', callback_data='users')
     markup.add(btn)
-    bot.send_message(message.chat.id, 'Регистрация прошла успешно!', reply_markup=markup)
+    bot.send_message(message.chat.id, 'Регистрация прошла успешно!', reply_markup=nav2.run_mainMenu_student)
+    main.status_of_registration = False

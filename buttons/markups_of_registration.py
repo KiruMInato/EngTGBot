@@ -1,5 +1,3 @@
-from bots import main
-import telebot
 from telebot import types
 
 start_registration = types.InlineKeyboardMarkup()
@@ -15,7 +13,9 @@ remove_registration_set_role = types.ReplyKeyboardRemove()
 registration_set_letter = types.ReplyKeyboardMarkup()
 letter_a = types.KeyboardButton('А')
 letter_b = types.KeyboardButton('Б')
-registration_set_letter.add(letter_a, letter_b)
+letter_B = types.KeyboardButton('В')
+letter_G = types.KeyboardButton('Г')
+registration_set_letter.add(letter_a, letter_b, letter_B, letter_G)
 remove_registration_set_letter = types.ReplyKeyboardRemove()
 
 set_students_grade = types.InlineKeyboardMarkup()

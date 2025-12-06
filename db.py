@@ -1,6 +1,6 @@
 import psycopg2
-
-
+from bots import config
+bot = config.bot
 
 
 
@@ -43,6 +43,7 @@ class Database:
                 cursor.execute('SELECT id FROM users', (id,))
                 record = cursor.fetchone()
                 return record
+
     def insert_userId_letter_grade_into_groups(self, userId, grade, letter):
         with psycopg2.connect(dbname="EngTGBot",
                               user="postgres",
@@ -55,7 +56,6 @@ class Database:
                 return True
 
     def add_words_bulk(self, words_list):
-        """Массовое добавление слов"""
         with psycopg2.connect(dbname="EngTGBot",
                               user="postgres",
                               password="sk1726ks",
@@ -63,9 +63,55 @@ class Database:
                               port="1726") as con:
             with con.cursor() as cursor:
                 cursor.executemany(
-                    'INSERT INTO dictionary (word, transcription, translate) VALUES (%s, %s, %s)',
-                    words_list  # ← УБРАТЬ СКОБКИ! Просто words_list
+                    'INSERT INTO dictionary (word, translate, transcription) VALUES (%s, %s, %s)',
+                    words_list
                 )
         print(f"Добавлено {len(words_list)} слов в словарь")
+
+    def get_role(self, tg):
+        with psycopg2.connect(dbname="EngTGBot",
+                              user="postgres",
+                              password="sk1726ks",
+                              host="localhost",
+                              port="1726") as con:
+            with con.cursor() as cursor:
+                cursor.execute('SELECT role FROM users WHERE tg_name=%s', (tg,))
+                role = cursor.fetchone()
+                return role
+
+    def get_20_random_words(self, call):
+        with psycopg2.connect(dbname="EngTGBot",
+                              user="postgres",
+                              password="sk1726ks",
+                              host="localhost",
+                              port="1726") as con:
+            with con.cursor() as cursor:
+                cursor.execute("SELECT word, translate, transcription FROM dictionary ORDER BY RANDOM() LIMIT 20")
+                words = cursor.fetchall()
+
+                response = "🎲 20 случайных слов:\n\n"
+                for i, (word, translate, transcription) in enumerate(words, 1):
+                    response += f"{i}. {word} - {translate} - {transcription}\n"
+                bot.send_message(call.message.chat.id, response)
+
+    def find_word_by_translate(self, translate):
+        with psycopg2.connect(dbname="EngTGBot",
+                          user="postgres",
+                          password="sk1726ks",
+                          host="localhost",
+                          port="1726") as con:
+            with con.cursor() as cursor:
+                cursor.execute('SELECT word, translate, transcription FROM dictionary WHERE LOWER(translate)=LOWER(%s)', (translate))
+                result = cursor.fetchall()
+                return result
+
+    def delete_users_table(self):
+        with psycopg2.connect(dbname="EngTGBot",
+                              user="postgres",
+                              password="sk1726ks",
+                              host="localhost",
+                              port="1726") as con:
+            with con.cursor() as cursor:
+                cursor.execute('DELETE FROM users')
 
 database = Database()
