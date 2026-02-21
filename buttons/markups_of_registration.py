@@ -1,8 +1,7 @@
 from telebot import types
 
 start_registration = types.InlineKeyboardMarkup()
-start_registration_button = types.InlineKeyboardButton('Регистрация', callback_data="registration")
-start_registration.add(start_registration_button)
+start_registration.add(types.InlineKeyboardButton('Регистрация', callback_data="registration"))
 
 registration_set_role = types.ReplyKeyboardMarkup()
 role_student = types.KeyboardButton('Student')

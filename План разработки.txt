@@ -17,7 +17,7 @@ ProjectTGBot
     2.2 Таблица "Groups" содержит информацию о группах. Поля: "GroupId", "TeacherId", "UserId", "Grade", "Letter"
     2.3 Таблица "Dictionary" хранит словарь. Поля: "Id", "Word", "Translate", "Transcription"
     2.4 Таблица "TestQuestions" хранит пул вопросов которые используются в тестах. Поля: "QuestionId", "Question", "Answer", "TestId"
-    2.5 Таблица "Tests" хранит названия тестов доступных для прохождения. Поля: "TestId", "TestName", "Theme", "Grade"
+    2.5 Таблица "Tests" хранит названия тестов доступных для прохождения. Поля: "TestId", "TestName", "Theme", "GroupId"
     2.6 Таблица "Reports" хранит отчёты о пройдённых учениками тестах. Поля: "ReportId", "TestId", "StudentId", "DateTime", "QuestionId", "Answer", "Pass"
 
 3. Пользователи Teacher и Student выбирают свои роли во время регистрации

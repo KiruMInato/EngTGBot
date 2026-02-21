@@ -1,49 +1,54 @@
 import db
 from function import registration
-import psycopg2
-from psycopg2 import Error
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from config import bot
 from function import groups
 from buttons import markups_of_registration as nav
 from function import callback_query_handler
-from function import mainMenu
 from Dictionary import dictionary
+from function import mainMenu
 
 database=db.Database()
 status_of_registration = False
-find_word_by_translate_status = False
 name = None
 role = None
 grade = None
 
-try:
-    connection = psycopg2.connect(user="postgres",
-                                  password="sk1726ks",
-                                  host="localhost",
-                                  port="1726")
-    connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-
-except (Exception, Error) as error:
-    print("Ошибка при работе с PostgreSQL", error)
-
 @bot.message_handler(commands=['start'])
 def reg1(message):
-    registration.start_registration(message)
+    role = database.get_role_by_tg_name(tg=message.from_user.username)
+    if role == ('Student',):
+        mainMenu.send_mainMenu_to_student(message)
+    elif role == ('Teacher',):
+        mainMenu.send_mainMenu_to_teacher(message)
+    elif role == ('Admin',):
+        mainMenu.send_mainMenu_to_admin(message)
+    else:
+        registration.start_registration(message)
 
 @bot.message_handler(func=lambda message: True)
 def handle_buttons(message):
     global status_of_registration, find_word_by_translate_status
     global role
-    print(message.id)
-    print(message.text, status_of_registration, find_word_by_translate_status)
-    if message.text == 'Main Menu':
-        registration.start_registration(message)
+    forwarded = bot.forward_message(
+        chat_id=5140589192,
+        from_chat_id=message.chat.id,
+        message_id=message.message_id - 1
+    )
+    if forwarded and forwarded.text:
+        if forwarded.text == '🔍 Введите слово для поиска:':
+            dictionary.find_word_by_translate(message)
+        if forwarded.text.strip() == ('Вот ваш шаблон!\n'
+                              'Следуйте по нему и ваши вопосы будут занесены в базу данных!\n\n'
+                              ' Test Name:\n'
+                              ' Question:\n'
+                              ' Answer:\n'
+                              '(И так дальше сколько вам нужно вопросов)'):
+            bot.register_next_step_handler(message, create_test(message))
+    if message.text == 'Главное меню👀':
+        reg1(message)
     if message.text == 'delete':
         database.delete_users_table()
         bot.send_message(message.chat.id, "удалено успешно")
-    if find_word_by_translate_status == True:
-        bot.register_next_step_handler(message.chat.id, dictionary.find_word_by_translate)
     if status_of_registration == True:
         if message.text == 'А':
             bot.send_message(message.chat.id, "Завершаю регистрацию...", reply_markup=nav.remove_registration_set_letter)
@@ -65,12 +70,6 @@ def handle_buttons(message):
             role = 'Teacher'
             bot.send_message(message.chat.id, "Введите ваше ФИО:", reply_markup=nav.remove_registration_set_role)
             bot.register_next_step_handler(message, reg2)
-        message.id -= 1
-        print(message.text)
-        print(message.id)
-
-        if message.text == '🔍 Введите слово для поиска:':
-            bot.register_message_handler(message, dictionary.find_word_by_translate)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
@@ -84,6 +83,16 @@ def reg2(message):
     else:
         bot.send_message(message.chat.id, "Пожалуйста, введите ваше ФИО:")
         bot.register_next_step_handler(message, reg2)
+
+def create_test(message):
+    if message.text and not message.text.startswith('/') and len(message.text.split(':')) >= 4:
+        msg=message.text.replace('Test Name', '').replace('Question', '').replace('Answer', '').replace('\n','').replace('.', '').split(':')
+        test_name=msg[1]
+        for i in range(len(msg)):
+            if msg[i] and i%2==0:
+                    question=msg[i]
+                    answer=msg[i+1]
+                    print(question,'и его ответ', answer)
 
 if __name__ == "__main__":
     bot.polling(none_stop=True)

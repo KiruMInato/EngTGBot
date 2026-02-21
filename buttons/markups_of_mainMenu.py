@@ -1,17 +1,28 @@
 from telebot import types
 
 run_mainMenu_teacher = types.ReplyKeyboardMarkup(resize_keyboard=True)
-run_mainMenu_teacher.add(types.KeyboardButton('Main Menu'))
+run_mainMenu_teacher.add(types.KeyboardButton('Главное меню👀'))
 remove_run_mainMenu_teacher = types.ReplyKeyboardRemove()
 
 run_mainMenu_student = types.ReplyKeyboardMarkup(resize_keyboard=True)
-run_mainMenu_student.add(types.KeyboardButton('Main Menu'))
+run_mainMenu_student.add(types.KeyboardButton('Главное меню👀'))
 remove_run_mainMenu_student = types.ReplyKeyboardRemove()
 
 mainMenu_student = types.InlineKeyboardMarkup()
-mainMenu_student.add(types.InlineKeyboardButton('Dictionary', callback_data='dictionary'))
+mainMenu_student.add(types.InlineKeyboardButton('Словарь 📒', callback_data='dictionary'),
+                     types.InlineKeyboardButton('Получить задание 💬', callback_data='get_test'))
 
 dictionary = types.InlineKeyboardMarkup()
-dictionary.add(types.InlineKeyboardButton('Find by spelling', callback_data='find by spelling'),
-               types.InlineKeyboardButton('🔢 Find by translation 🔢', callback_data='find by translation'),
-               types.InlineKeyboardButton('🎲 Get 20 random words 🎲', callback_data='get random words of dictionary'))
+dictionary.add(types.InlineKeyboardButton(' Найти слово 🔢', callback_data='find word'),
+               types.InlineKeyboardButton(' Получить 20 случайных слов 🎲', callback_data='get random words of dictionary'))
+
+dictionary_find_word = types.InlineKeyboardMarkup()
+dictionary_find_word.add(types.InlineKeyboardButton(' Попробовать снова 🔢', callback_data='find word'))
+
+mainMenu_teacher = types.InlineKeyboardMarkup()
+mainMenu_teacher.add(types.InlineKeyboardButton('--Создать тест--', callback_data='create_test_for_student'))
+
+create_test_type = types.InlineKeyboardMarkup()
+create_test_type.add(types.InlineKeyboardButton('--Создать в Telegramm--', callback_data='create_test_in_tg'),
+                     types.InlineKeyboardButton('--Создать в Excel--', callback_data='create_test_in_excel'))
+
