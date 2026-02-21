@@ -27,7 +27,7 @@ def reg1(message):
 
 @bot.message_handler(func=lambda message: True)
 def handle_buttons(message):
-    global status_of_registration, find_word_by_translate_status
+    global status_of_registration
     global role
     forwarded = bot.forward_message(
         chat_id=5140589192,
@@ -87,7 +87,6 @@ def reg2(message):
 def create_test(message):
     if message.text and not message.text.startswith('/') and len(message.text.split(':')) >= 4:
         msg=message.text.replace('Test Name', '').replace('Question', '').replace('Answer', '').replace('\n','').replace('.', '').split(':')
-        test_name=msg[1]
         for i in range(len(msg)):
             if msg[i] and i%2==0:
                     question=msg[i]

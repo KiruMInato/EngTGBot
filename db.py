@@ -33,7 +33,7 @@ class Database:
                                (name, tg_name, role))
                 return True
 
-    def select_id_from_users(self, id):
+    def insert_userId_letter_grade_into_groups(self, grade, letter):
         with psycopg2.connect(dbname="EngTGBot",
                               user="postgres",
                               password="sk1726ks",
@@ -41,16 +41,7 @@ class Database:
                               port="1726") as con:
             with con.cursor() as cursor:
                 cursor.execute('SELECT id FROM users', (id,))
-                record = cursor.fetchone()
-                return record
-
-    def insert_userId_letter_grade_into_groups(self, userId, grade, letter):
-        with psycopg2.connect(dbname="EngTGBot",
-                              user="postgres",
-                              password="sk1726ks",
-                              host="localhost",
-                              port="1726") as con:
-            with con.cursor() as cursor:
+                userId = cursor.fetchone()
                 cursor.execute('INSERT INTO groups (userid, grade, letter) VALUES (%s, %s, %s)',
                            (userId, grade, letter))
                 return True
