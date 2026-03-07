@@ -1,4 +1,4 @@
-import db
+from db import db
 from function import registration
 from config import bot
 from function import groups
@@ -7,7 +7,7 @@ from function import callback_query_handler
 from Dictionary import dictionary
 from function import mainMenu
 
-database=db.Database()
+database= db.Database()
 status_of_registration = False
 name = None
 role = None
@@ -38,10 +38,11 @@ def handle_buttons(message):
         if forwarded.text == '🔍 Введите слово для поиска:':
             dictionary.find_word_by_translate(message)
         if forwarded.text.strip() == ('Вот ваш шаблон!\n'
-                              'Следуйте по нему и ваши вопосы будут занесены в базу данных!\n\n'
-                              ' Test Name:\n'
-                              ' Question:\n'
-                              ' Answer:\n'
+                              'Следуйте по нему и ваши вопросы будут занесены в базу данных!\n\n'
+                              'Test Name:\n'
+                              'Test Theme:\n'
+                              'Question:\n'
+                              'Answer:\n'
                               '(И так дальше сколько вам нужно вопросов)'):
             bot.register_next_step_handler(message, create_test(message))
     if message.text == 'Главное меню👀':
@@ -86,7 +87,8 @@ def reg2(message):
 
 def create_test(message):
     if message.text and not message.text.startswith('/') and len(message.text.split(':')) >= 4:
-        msg=message.text.replace('Test Name', '').replace('Question', '').replace('Answer', '').replace('\n','').replace('.', '').split(':')
+        msg=message.text.replace('Test Name', '').replace('Test Theme', '').replace('Question', '').replace('Answer', '').replace('\n','').replace('.', '').split(':')
+        Test_Theme = msg.pop(2)
         for i in range(len(msg)):
             if msg[i] and i%2==0:
                     question=msg[i]

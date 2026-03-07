@@ -1,12 +1,7 @@
-from bots import main
-import telebot
-import psycopg2
-from telebot import types
 from bots import config
-from psycopg2 import Error
 from buttons import markups_of_registration as nav
 from buttons import markups_of_mainMenu as nav2
-from db import database
+from db.db import database
 from bots import main
 
 bot=config.bot

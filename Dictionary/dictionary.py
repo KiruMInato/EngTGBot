@@ -1,4 +1,4 @@
-import db
+from db import db
 from bots import config
 from buttons import markups_of_mainMenu as nav2
 bot = config.bot

@@ -1,13 +1,12 @@
 import psycopg2
-import db
+from db import db
 from bots import config
-from bots import main
 from function import groups
 from buttons import markups_of_registration as nav
 from buttons import markups_of_mainMenu as nav2
 from telebot import types
 
-database=db.Database()
+database= db.Database()
 bot=config.bot
 
 
@@ -63,8 +62,9 @@ def callback(call):
         bot.send_message(call.message.chat.id, 'Выберите тип создания теста', reply_markup=nav2.create_test_type)
     elif call.data == 'create_test_in_tg':
         bot.send_message(call.message.chat.id, f'Вот ваш шаблон!\n'
-                                               'Следуйте по нему и ваши вопосы будут занесены в базу данных!\n\n'
+                                               'Следуйте по нему и ваши вопросы будут занесены в базу данных!\n\n'
                                                'Test Name:\n'
+                                               'Test Theme:\n'
                                                'Question:\n'
                                                'Answer:\n'
                                                '(И так дальше сколько вам нужно вопросов)')
@@ -79,6 +79,12 @@ def callback(call):
             bot.send_message(call.message.chat.id, 'Выберите вашего учителя из списка!', reply_markup=teachers_button)
         else:
             pass
+    elif call.data=='see_all_groups':
+        tg=call.message.from_user.username
+        record = database.get_grade_and_letter_from_teacher(tg)
+        print(record)
+
+
     else:
         number_of_teachers = database.get_all_teachers_from_users()
         for i in number_of_teachers:

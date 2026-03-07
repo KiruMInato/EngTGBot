@@ -1,8 +1,7 @@
 from bots import config
-from db import database
+from db.db import database
 from buttons import markups_of_registration as nav
 from buttons import markups_of_mainMenu as nav2
-from function import mainMenu
 from bots import main
 bot = config.bot
 class User:

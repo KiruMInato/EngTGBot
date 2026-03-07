@@ -117,6 +117,17 @@ class Database:
                 cursor.execute('SELECT teacherid FROM groups JOIN users on groups.userid=users.id WHERE users.tg_name=%s', (tg, ))
                 record=cursor.fetchone()
                 return record
+
+    def get_grade_and_letter_from_teacher(self, tg):
+        with psycopg2.connect(dbname="EngTGBot",
+                              user="postgres",
+                              password="sk1726ks",
+                              host="localhost",
+                              port="1726") as con:
+            with con.cursor() as cursor:
+                cursor.execute('SELECT grade, letter FROM groups JOIN users on groups.teacherid=users.id WHERE users.tg_name=%s', (tg, ))
+                record=cursor.fetchall()
+                return record
     def  get_all_teachers_from_users(self):
         with psycopg2.connect(dbname="EngTGBot",
                               user="postgres",

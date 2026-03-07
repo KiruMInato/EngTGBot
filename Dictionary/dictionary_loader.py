@@ -1,4 +1,4 @@
-from db import database
+from db.db import database
 import psycopg2
 
 def load_dictionary():

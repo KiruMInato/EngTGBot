@@ -20,7 +20,8 @@ dictionary_find_word = types.InlineKeyboardMarkup()
 dictionary_find_word.add(types.InlineKeyboardButton(' Попробовать снова 🔢', callback_data='find word'))
 
 mainMenu_teacher = types.InlineKeyboardMarkup()
-mainMenu_teacher.add(types.InlineKeyboardButton('--Создать тест--', callback_data='create_test_for_student'))
+mainMenu_teacher.add(types.InlineKeyboardButton('--Создать тест--', callback_data='create_test_for_student'),
+                     types.InlineKeyboardButton('--Посмотреть группы--', callback_data='see_all_groups'))
 
 create_test_type = types.InlineKeyboardMarkup()
 create_test_type.add(types.InlineKeyboardButton('--Создать в Telegramm--', callback_data='create_test_in_tg'),
