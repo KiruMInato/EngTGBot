@@ -24,7 +24,6 @@ def user_grade(call, grade):
     bot.send_message(call.message.chat.id, "Буква вашего класса!", reply_markup=nav.registration_set_letter)
 
 def user_letter(message):
-    bot=config.bot
     global letter
     letter = message.text.strip()
     group.set_letter(letter)
@@ -36,8 +35,3 @@ def set_teacher(message):
     for i in number_of_teachers:
         teachers_button.add(types.InlineKeyboardButton(i[0], callback_data=str(i[0])))
     bot.send_message(message.chat.id, 'Выберите вашего учителя из списка!', reply_markup=teachers_button)
-
-def set_grades_and_letters(message):
-    grades_and_letters = message.text.strip().split(',')
-    for i in grades_and_letters:
-        print(i)
