@@ -1,10 +1,12 @@
 import psycopg2
 from db import db
 from bots import config
+from bots import main
 from function import groups
 from buttons import markups_of_registration as nav
 from buttons import markups_of_mainMenu as nav2
 from telebot import types
+from  function import registration
 
 database= db.Database()
 bot=config.bot
@@ -68,6 +70,8 @@ def callback(call):
                                                'Question:\n'
                                                'Answer:\n'
                                                '(И так дальше сколько вам нужно вопросов)')
+    elif call.data == 'create_test_in_excel':
+        bot.send_document(call.message.chat.id, open('../Other/testexample.xlsx', 'rb'), caption='')
     elif call.data == 'get_test':
         tg=call.message.from_user.username
         record = database.get_teacher_id_from_student(tg)
@@ -83,11 +87,15 @@ def callback(call):
         tg=call.message.from_user.username
         record = database.get_grade_and_letter_from_teacher(tg)
         print(record)
-
-
     else:
         number_of_teachers = database.get_all_teachers_from_users()
         for i in number_of_teachers:
-            if call.data==str(i):
+            if call.data==str(i[0]):
                 name=i[0]
-                database.insert_teacherid_to_student_into_groups(name)
+                tg = call.from_user.username
+                role=registration.user.role
+                name_student=registration.user.name
+                group_id=database.select_teacherid_to_student_into_groups(name, groups.group.grade, groups.group.letter, tg, name_student, role, message=call.message)
+                if group_id:
+                    bot.send_message(call.message.chat.id, 'Регистрация прошла успешно!', reply_markup=nav2.run_mainMenu_student)
+                    main.status_of_registration = False

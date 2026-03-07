@@ -51,17 +51,8 @@ def handle_buttons(message):
         database.delete_users_table()
         bot.send_message(message.chat.id, "удалено успешно")
     if status_of_registration == True:
-        if message.text == 'А':
-            bot.send_message(message.chat.id, "Завершаю регистрацию...", reply_markup=nav.remove_registration_set_letter)
-            groups.user_letter(message)
-        if message.text == 'Б':
-            bot.send_message(message.chat.id, "Завершаю регистрацию...", reply_markup=nav.remove_registration_set_letter)
-            groups.user_letter(message)
-        if message.text == 'В':
-            bot.send_message(message.chat.id, "Завершаю регистрацию...", reply_markup=nav.remove_registration_set_letter)
-            groups.user_letter(message)
-        if message.text == 'Г':
-            bot.send_message(message.chat.id, "Завершаю регистрацию...", reply_markup=nav.remove_registration_set_letter)
+        if message.text == 'А' or message.text == 'Б' or message.text == 'В' or message.text == 'Г':
+            bot.send_message(message.chat.id, 'j', reply_markup=nav.remove_registration_set_letter)
             groups.user_letter(message)
         if message.text == 'Student':
             role = 'Student'

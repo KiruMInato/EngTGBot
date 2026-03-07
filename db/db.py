@@ -22,30 +22,6 @@ class Database:
                 role = cursor.fetchone()
                 return role
 
-    def set_name_tgname_role_into_table(self, name, role, tg_name):
-        with psycopg2.connect(dbname="EngTGBot",
-                                user="postgres",
-                                  password="sk1726ks",
-                                  host="localhost",
-                                  port="1726") as con:
-            with con.cursor() as cursor:
-                cursor.execute('INSERT INTO users (name, tg_name, role) VALUES (%s, %s, %s)',
-                               (name, tg_name, role))
-                return True
-
-    def insert_userId_letter_grade_into_groups(self, grade, letter):
-        with psycopg2.connect(dbname="EngTGBot",
-                              user="postgres",
-                              password="sk1726ks",
-                              host="localhost",
-                              port="1726") as con:
-            with con.cursor() as cursor:
-                cursor.execute('SELECT id FROM users', (id,))
-                userId = cursor.fetchone()
-                cursor.execute('INSERT INTO groups (userid, grade, letter) VALUES (%s, %s, %s)',
-                           (userId, grade, letter))
-                return True
-
     def add_words_bulk(self, words_list):
         with psycopg2.connect(dbname="EngTGBot",
                               user="postgres",
@@ -114,8 +90,11 @@ class Database:
                               host="localhost",
                               port="1726") as con:
             with con.cursor() as cursor:
-                cursor.execute('SELECT teacherid FROM groups JOIN users on groups.userid=users.id WHERE users.tg_name=%s', (tg, ))
+                cursor.execute('SELECT group_id FROM users WHERE tg_name=%s', (tg, ))
+                group_id=cursor.fetchone()
+                cursor.execute('SELECT test_id FROM tests JOIN on groups groups.group_id=tests.group_id WHERE groups.group_id=%s', (group_id, ))
                 record=cursor.fetchone()
+
                 return record
 
     def get_grade_and_letter_from_teacher(self, tg):
@@ -125,9 +104,10 @@ class Database:
                               host="localhost",
                               port="1726") as con:
             with con.cursor() as cursor:
-                cursor.execute('SELECT grade, letter FROM groups JOIN users on groups.teacherid=users.id WHERE users.tg_name=%s', (tg, ))
+                cursor.execute('SELECT grade, letter FROM groups JOIN users on groups.teacher_id=users.id WHERE users.tg_name=%s', (tg, ))
                 record=cursor.fetchall()
                 return record
+
     def  get_all_teachers_from_users(self):
         with psycopg2.connect(dbname="EngTGBot",
                               user="postgres",
@@ -140,15 +120,29 @@ class Database:
                 record=cursor.fetchall()
                 return record
 
-    def insert_teacherid_to_student_into_groups(self, name):
+    def select_teacherid_to_student_into_groups(self, name, grade, letter, tg, name_student, role, message):
         with psycopg2.connect(dbname="EngTGBot",
                               user="postgres",
                               password="sk1726ks",
                               host="localhost",
                               port="1726") as con:
             with con.cursor() as cursor:
-                cursor.execute('SELECT teacherid FROM groups JOIN users on groups.userid=users.id WHERE users.name=%s', (name, ))
+
+                cursor.execute('SELECT teacher_id FROM groups JOIN users on groups.teacher_id=users.id WHERE users.name=%s', (name, ))
                 teacher_id=cursor.fetchone()
-                cursor.execute('INSERT INTO groups(teacherid) VALUES (%s)', (teacher_id, ))
+                cursor.execute('SELECT group_id FROM groups WHERE teacher_id=%s and grade=%s and letter=%s', (teacher_id, grade, letter, ))
+                group_id=cursor.fetchone()
+                if group_id:
+                    cursor.execute('INSERT INTO users (name, tg_name, role) VALUES (%s, %s, %s)',
+                                   (name_student, tg, role))
+                    cursor.execute('UPDATE users SET group_id=%s WHERE tg_name=%s', (group_id, tg, ))
+                else:
+                    bot.send_message(message.chat.id, 'Группы с такими классами и литерами не найдены!\n'
+                                                      'Возможно вы выбрали не правильные или учитель не создал подходящую группу.\n'
+                                                      'Попробуйте начать регистрацию с момента выбора класса. (имя и роль уже внесены в бауз данных)\n'
+                                                      'Если не получается и выдает ошибку, то решите проблему с учителем.\n'
+                                                      'В противном случае напишите в тех. поддержку, написав комманду /support')
+                return group_id
+
 
 database = Database()

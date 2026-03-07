@@ -3,18 +3,20 @@ from buttons import markups_of_registration as nav
 from buttons import markups_of_mainMenu as nav2
 from db.db import database
 from bots import main
-
+from telebot import types
 bot=config.bot
 id = None
 class Group:
     userId = None
     letter = None
     grade = None
+
     def set_grade(self, grade):
         self.grade=grade
 
     def set_letter(self, letter):
         self.letter=letter
+
 group=Group()
 def user_grade(call, grade):
     global letter
@@ -26,6 +28,16 @@ def user_letter(message):
     global letter
     letter = message.text.strip()
     group.set_letter(letter)
-    database.insert_userId_letter_grade_into_groups(group.grade, group.letter)
-    bot.send_message(message.chat.id, 'Регистрация прошла успешно!', reply_markup=nav2.run_mainMenu_student)
-    main.status_of_registration = False
+    set_teacher(message)
+
+def set_teacher(message):
+    number_of_teachers = database.get_all_teachers_from_users()
+    teachers_button = types.InlineKeyboardMarkup()
+    for i in number_of_teachers:
+        teachers_button.add(types.InlineKeyboardButton(i[0], callback_data=str(i[0])))
+    bot.send_message(message.chat.id, 'Выберите вашего учителя из списка!', reply_markup=teachers_button)
+
+def set_grades_and_letters(message):
+    grades_and_letters = message.text.strip().split(',')
+    for i in grades_and_letters:
+        print(i)
