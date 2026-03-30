@@ -21,31 +21,28 @@ class User:
         self.tg_name=tg_name
 user=User()
 def start_registration(message):
-    main.status_of_registration = True
-    user.set_tg_name(message.from_user.username)
     bot.send_photo(message.chat.id, open('../photo/Do you speak english.jpg', 'rb'),
-                               caption=f'Добро пожаловать, {message.from_user.first_name}!', reply_markup=nav.start_registration)
+                               caption=f'Добро пожаловать, {message.from_user.first_name}!\n'
+                                       f'P.S.: вы не сможете пользоваться ботом, если у вас скрыт ЮЗ TG!', reply_markup=nav.start_registration)
 
 def user_name(message, role):
             global name
             name = message.text.strip()
+            user.set_tg_name(message.from_user.username)
             user.set_name(name)
             user.set_role(role)
             if user.role == 'Student':
                 bot.send_message(message.chat.id, 'Выберите номер вашего класса:', reply_markup=nav.set_students_grade)
             elif user.role == 'Teacher':
-                # bot.send_message(message.chat.id, 'Регистрация прошла успешно!', reply_markup=nav2.run_mainMenu_teacher)
-                # main.status_of_registration = False
-                bot.send_message(message.chat.id, 'Введите ваши классы и их литеры(буквы)\n'
-                                                  'Пример: 10Б, 11Г, 4А, 7В и так далее.\n'
-                                                  '\bСледуйте четко по шаблону!\b')
-                bot.register_next_step_handler(message, grade_and_letters_of_teacher_groups)
+
+                bot.send_message(message.chat.id, 'Введите ваши классы и их литеры(буквы)\nПример:\n 10 Б, 11 Г, 4 А, 7 В\nСледуйте четко по шаблону!\nПосле класса пробел и потом буква!')
 
 def grade_and_letters_of_teacher_groups(message):
     if message.text and not message.text.startswith('/'):
-        groups.set_grades_and_letters(message)
+        teacher_id=database.insert_tg_name_and_name_and_role(user.tg_name, user.name, user.role)
+        groups.set_grades_and_letters(message, teacher_id)
     else:
-        bot.send_message(message.chat.id, "Пожалуйста, введите по шаблону: 10Б, 11Г, 4А, 7В")
+        bot.send_message(message.chat.id, "Пожалуйста, введите по шаблону: 10 Б, 11 Г, 4 А, 7 В")
         bot.register_next_step_handler(message, grade_and_letters_of_teacher_groups)
 
 

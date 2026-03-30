@@ -3,13 +3,13 @@ from telebot import types
 start_registration = types.InlineKeyboardMarkup()
 start_registration.add(types.InlineKeyboardButton('Регистрация', callback_data="registration"))
 
-registration_set_role = types.ReplyKeyboardMarkup()
+registration_set_role = types.ReplyKeyboardMarkup(resize_keyboard=True)
 role_student = types.KeyboardButton('Student')
 role_teacher = types.KeyboardButton('Teacher')
 registration_set_role.add(role_student, role_teacher)
 remove_registration_set_role = types.ReplyKeyboardRemove()
 
-registration_set_letter = types.ReplyKeyboardMarkup()
+registration_set_letter = types.ReplyKeyboardMarkup(resize_keyboard=True)
 letter_a = types.KeyboardButton('А')
 letter_b = types.KeyboardButton('Б')
 letter_B = types.KeyboardButton('В')
